@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Escaneo QR - {{ sucursal }}</title>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+    <h2>Bienvenido a la sucursal: {{ sucursal }}</h2>
+    <p>Escanea el código QR de la mesa para registrar la visita.</p>
+
+    <div id="reader" style="width: 300px;"></div>
+    <p>Último código escaneado: <span id="resultado">Ninguno</span></p>
+
+    <button onclick="window.location.href='{{ url_for('logout') }}'">Cerrar sesión</button>
+
+    <script>
+        let html5QrCode = new Html5Qrcode("reader");
+
+        async function onScanSuccess(decodedText, decodedResult) {
+            document.getElementById("resultado").innerText = decodedText;
+
+            try {
+                const response = await fetch("/registrar_visita", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ codigo_qr: decodedText })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert(`✅ Visita registrada:\nMesa: ${data.codigo_qr}\nSucursal: ${data.sucursal}\nHora: ${data.fecha_hora}`);
+                } else {
+                    alert(`❌ Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert("❌ Error al conectar con el servidor.");
+            }
+
+            html5QrCode.stop().catch(err => console.error("Error al detener:", err));
+        }
+
+        function onScanFailure(error) {
+            // Silencio para evitar spam de errores
+        }
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                let backCamera = devices.find(device => device.label.toLowerCase().includes("back")) || devices[0];
+                html5QrCode.start(
+                    backCamera.id,
+                    { fps: 10, qrbox: 250 },
+                    onScanSuccess,
+                    onScanFailure
+                );
+            } else {
+                alert("No se encontró ninguna cámara.");
+            }
+        }).catch(err => {
+            alert("No se pudo acceder a la cámara.");
+            console.error(err);
+        });
+    </script>
+</body>
+</html>
