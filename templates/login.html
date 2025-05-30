@@ -2,21 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso por sucursal</title>
+    <title>Login</title>
 </head>
 <body>
-    <h2>Ingrese el código de su sucursal</h2>
+    <h2>Ingresar código de sucursal</h2>
     <form method="POST">
-        <input type="text" name="codigo" placeholder="Código de sucursal" required>
+        <input type="text" name="codigo" placeholder="Código de acceso" required>
         <button type="submit">Entrar</button>
     </form>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul style="color: red;">
-                {% for msg in messages %}
-                    <li>{{ msg }}</li>
-                {% endfor %}
-            </ul>
+            <p style="color:red">{{ messages[0] }}</p>
         {% endif %}
     {% endwith %}
 </body>
