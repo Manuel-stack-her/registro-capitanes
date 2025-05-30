@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registros</title>
+</head>
+<body>
+    <h2>Registros de visitas</h2>
+    <table border="1">
+        <tr>
+            <th>Fecha y hora</th>
+            <th>Capitán</th>
+            <th>Código QR</th>
+            <th>Sucursal</th>
+        </tr>
+        {% for v in visitas %}
+        <tr>
+            <td>{{ v.fecha_hora }}</td>
+            <td>{{ v.capitan }}</td>
+            <td>{{ v.codigo_qr }}</td>
+            <td>{{ v.sucursal }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="/exportar_excel">Exportar a Excel</a> | <a href="/exportar_pdf">Exportar a PDF</a> | <a href="/index">Regresar</a>
+</body>
+</html>
